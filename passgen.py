@@ -3,21 +3,25 @@ import string
 import tkinter as tk
 
 
-def generate_password():
+def get_password_chars():
     # Define the character set to use for the password
     chars = string.ascii_letters + string.digits
 
     # Filter out unwanted characters
     chars = [c for c in chars if c not in 'lIo0O1']
 
-    # Generate a random password by choosing characters from the character set
-    first = ''.join(random.choice(chars) for i in range(5))
-    second = ''.join(random.choice(chars) for i in range(5))
-    third = ''.join(random.choice(chars) for i in range(5))
-    fourth = ''.join(random.choice(chars) for i in range(5))
+    return chars
 
-    # Join the sections together to form the complete password
-    password = '-'.join([first, second, third, fourth])
+
+def generate_password():
+    # Get the character set to use for the password
+    chars = get_password_chars()
+
+    # Generate a random password by choosing characters from the character set
+    sections = [''.join(random.choice(chars)
+                        for i in range(5)) for j in range(4)]
+    password = '-'.join(sections)
+
     return password
 
 
@@ -27,11 +31,12 @@ def generate_passwords():
 
     # Get the number of passwords to generate from the entry box
     amount = int(entry_amount.get())
-
+    if amount > 1000:
+        amount = 1000
     # Generate the specified number of passwords and add them to the output text widget
-    for i in range(amount):
-        password = generate_password()
-        output_text.insert(tk.END, password + '\n')
+    passwords = [generate_password() for i in range(amount)]
+    output_text.insert(tk.END, '\n'.join(passwords))
+    passwords = []
 
 
 # Create the main window and add a title
@@ -53,7 +58,7 @@ button_generate.grid(row=1, column=0, columnspan=2)
 
 # Create a text widget to display the generated passwords
 output_text = tk.Text(root, highlightbackground="gray", highlightthickness=1)
-output_text.grid(row=6, column=0, columnspan=3, sticky="we")
+output_text.grid(row=2, column=0, columnspan=2, sticky="we")
 
 # Start the main loop of the GUI
 root.mainloop()
